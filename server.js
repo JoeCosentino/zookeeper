@@ -10,6 +10,9 @@ app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
 
+// to make the script and link tags readable in the html
+app.use(express.static('public'));
+
 // this creates a route that the front-end can request data from
 const { animals } = require('./data/animals');
 
@@ -118,8 +121,27 @@ app.post('/api/animals', (req, res) => {
     }
 });
 
+// this route was instructed to go under the existing routes but above app.listen() because app.listen() should always be last.
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepr-public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+// the '*' should always come last, otherwise it will take precedence over named routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+
 app.listen(PORT, () => {
     console.log('API server now on port 3001!');
 });
 
-// LEFT OFF 11.2.1 INTRODUCTION
+// LEFT OFF 11.3.6 CREATE ROUTES TO SERVE INDEX.HTML
